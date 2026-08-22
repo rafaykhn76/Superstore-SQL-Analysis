@@ -162,11 +162,11 @@ FROM super_store_dataset
 GROUP BY customer_name
 HAVING SUM(sales) >
 (
-    SELECT AVG(Total_customers)
+    SELECT AVG(Total_Sales)
     FROM (
         SELECT 
             customer_name,
-            SUM(sales) AS Total_customers
+            SUM(sales) AS Total_Sales
         FROM super_store_dataset
         GROUP BY customer_name
     ) AS Customer_sales
@@ -178,20 +178,14 @@ ORDER BY Total_Sales DESC;
 SELECT 
     category,
     product_name,
-    Total_sales,
+    SUM(sales) AS Total_Sales,
     RANK() OVER (
-        PARTITION BY category
-        ORDER BY Total_sales DESC
+        PARTITION BY category 
+        ORDER BY SUM(sales) DESC
     ) AS Sales_Rank
-FROM (
-    SELECT 
-        category,
-        product_name,
-        SUM(sales) AS Total_sales
-    FROM super_store_dataset
-    GROUP BY category, product_name
-) AS Product_Sales;
-
+FROM super_store_dataset
+GROUP BY category, product_name
+ORDER BY category, Sales_Rank;
 
 
 
