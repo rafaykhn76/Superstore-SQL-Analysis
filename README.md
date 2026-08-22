@@ -2,12 +2,12 @@
 
 ## 📊 Project Overview
 
-This project analyzes the Superstore dataset using SQL to identify
-sales performance, profitability, customer performance, product
-performance, and other business insights.
+This project analyzes the Superstore sales dataset using SQL to uncover
+insights into sales performance, profitability, customer performance,
+product performance, and operational trends.
 
-The project contains 20 SQL analysis questions covering basic,
-intermediate, and advanced SQL concepts.
+The project contains 20 business questions covering basic, intermediate,
+and advanced SQL concepts.
 
 ---
 
@@ -35,8 +35,8 @@ The dataset contains information about:
 - Discounts
 - Regions
 - Markets
-- Shipping modes
-- Order priorities
+- Shipping Modes
+- Order Priorities
 
 ---
 
@@ -49,12 +49,12 @@ The main objectives of this project were to:
 - Find top customers by sales and profit
 - Identify top-performing products
 - Compare regional and market performance
-- Analyze yearly sales and profit
+- Analyze yearly sales and profit trends
 - Analyze shipping modes and order priorities
 - Analyze discounts and quantity sold
 - Identify products generating negative profit
 - Compare customer sales against average customer sales
-- Rank products within each category
+- Rank products within each category based on total sales
 
 ---
 
@@ -81,7 +81,7 @@ The project answers the following 20 business questions:
 17. Which sub-categories have total profit greater than 50,000?
 18. Which products have a negative total profit?
 19. Which customers have total sales greater than the average customer sales?
-20. How can products be ranked by total sales within each category?
+20. Within each category, rank the products by their total sales, with the highest-selling product ranked #1.
 
 ---
 
@@ -93,6 +93,7 @@ This project demonstrates practical use of:
 - `SUM()`
 - `AVG()`
 - `COUNT()`
+- `COUNT(DISTINCT)`
 - `GROUP BY`
 - `ORDER BY`
 - `LIMIT`
@@ -110,11 +111,11 @@ This project demonstrates practical use of:
 
 ## 📈 Advanced SQL
 
-The final question uses a window function to rank products
-within each category based on total sales.
+The final question uses a window function to rank products within each
+category based on total sales.
 
 ```sql
 RANK() OVER (
     PARTITION BY category
-    ORDER BY Total_Sales DESC
+    ORDER BY SUM(sales) DESC
 )
