@@ -28,12 +28,12 @@ Order by Total_sales DESC ;
 
 # Which top 10 customers generate the highest total sales?
 
-Select customer_name ,
-sum(sales) As Total_sales
-from super_store_dataset
-Group by customer_name
-order by Total_sales DESC 
-limit 10;
+SELECT customer_name,
+SUM(sales) AS Total_sales
+FROM super_store_dataset
+GROUP BY customer_name
+ORDER BY Total_sales DESC
+LIMIT 10;
 
 # Which 10 customers generate the highest total profit?
 
@@ -87,28 +87,28 @@ Limit 10;
 Select year , sum(sales) AS Total_sales 
 from super_store_dataset
 Group by year 
-Order by Total_sales ;
+Order by year ;
 
 # How did total profit change across different years?
 
 Select year , sum(profit) AS Total_Profit
 from super_store_dataset
 group by year
-order by Total_Profit;
+order by year ;
 
 # Which shipping modes are used most frequently?
 
-SELECT ship_mode, COUNT(order_number) AS Total_Orders
+SELECT ship_mode, COUNT(DISTINCT order_number) AS Total_Orders
 FROM super_store_dataset
 GROUP BY ship_mode
 ORDER BY Total_Orders DESC;
 
 # How many orders are there for each order priority?
 
-Select order_priority , count(order_number) As Total_orders
+Select order_priority , COUNT(DISTINCT order_number) AS Total_Orders
 from super_store_dataset
 group by order_priority
-order by Total_orders;
+order by Total_orders DESC ;
 
 # What is the average discount offered for each product category?
 
@@ -155,29 +155,42 @@ order by Total_Profit DESC ;
 
 # Which customers have total sales greater than the average customer sales?
 
-
-SELECT customer_name, SUM(sales) AS Total_Sales
-from super_store_dataset
-group by customer_name
-Having sum(sales) >
+SELECT 
+    customer_name,
+    SUM(sales) AS Total_Sales
+FROM super_store_dataset
+GROUP BY customer_name
+HAVING SUM(sales) >
 (
-Select avg(Total_customers) 
-from (
-Select customer_name , Sum(sales) AS total_customers
-from super_store_dataset
-group by customer_name ) AS Customer_sales
+    SELECT AVG(Total_customers)
+    FROM (
+        SELECT 
+            customer_name,
+            SUM(sales) AS Total_customers
+        FROM super_store_dataset
+        GROUP BY customer_name
+    ) AS Customer_sales
 )
-Order by Total_Sales DESC ; 
+ORDER BY Total_Sales DESC;
 
 # Within each category, rank the products by their total sales, with the highest-selling product ranked #1. 
 
-Select category , product_name , Total_sales,
-Rank() Over ( partition by category order by total_sales  DESC) AS Sales_Rank
-from (
-Select category , Product_name , 
-sum(sales) AS total_sales 
-from super_store_dataset
-Group by Category , product_name) AS Customer_table ;
+SELECT 
+    category,
+    product_name,
+    Total_sales,
+    RANK() OVER (
+        PARTITION BY category
+        ORDER BY Total_sales DESC
+    ) AS Sales_Rank
+FROM (
+    SELECT 
+        category,
+        product_name,
+        SUM(sales) AS Total_sales
+    FROM super_store_dataset
+    GROUP BY category, product_name
+) AS Product_Sales;
 
 
 
