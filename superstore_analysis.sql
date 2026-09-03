@@ -187,12 +187,169 @@ FROM super_store_dataset
 GROUP BY category, product_name
 ORDER BY category, Sales_Rank;
 
+# ============================================================
+# WINDOW FUNCTIONS
+# ============================================================
+
+# Within each category, rank the products by their total sales, with the highest-selling product ranked #1. 
+
+SELECT category, product_name,
+SUM(sales) AS Total_Sales,
+RANK() OVER ( PARTITION BY category ORDER BY SUM(sales) DESC) AS Sales_Rank
+FROM super_store_dataset
+GROUP BY category, product_name
+ORDER BY category, Sales_Rank;
 
 
+# Within each category, rank the products by their total sales,
+# with the highest-selling product ranked #1.
+
+SELECT category,product_name,
+SUM(sales) AS Total_Sales,RANK() OVER (PARTITION BY category ORDER BY SUM(sales) DESC) AS Sales_Rank
+FROM super_store_dataset
+GROUP BY category, product_name
+ORDER BY category, Sales_Rank;
 
 
+# For each customer, assign a row number to their orders
+# based on sales from highest to lowest.
+
+SELECT customer_name,order_number, sales,
+ROW_NUMBER() OVER (PARTITION BY customer_name ORDER BY sales DESC) AS Row_Num
+FROM super_store_dataset
+ORDER BY customer_name, Row_Num;
 
 
+# For each customer, rank their orders by sales
+# from highest to lowest.
+
+SELECT customer_name,order_number,sales,
+RANK() OVER (PARTITION BY customer_name ORDER BY sales DESC) AS Sales_Rank
+FROM super_store_dataset
+ORDER BY customer_name, Sales_Rank;
+
+
+# Rank customers by their total sales.
+
+SELECT customer_name,SUM(sales) AS Total_Sales,
+RANK() OVER (ORDER BY SUM(sales) DESC) AS Sales_Rank
+FROM super_store_dataset
+GROUP BY customer_name
+ORDER BY Sales_Rank;
+
+
+# Find the highest-sales order for each customer.
+
+WITH Customer_Orders AS
+(
+SELECT customer_name, order_number, sales,
+ROW_NUMBER() OVER ( PARTITION BY customer_name ORDER BY sales DESC) AS Row_Num
+FROM super_store_dataset
+)
+SELECT customer_name, order_number,sales
+FROM Customer_Orders
+WHERE Row_Num = 1
+ORDER BY customer_name;
+
+# Show the top 3 highest-sales orders for each customer.
+
+WITH Customer_Orders AS
+(
+SELECT customer_name, order_number, sales,
+ROW_NUMBER() OVER ( PARTITION BY customer_name ORDER BY sales DESC) AS Row_Num
+FROM super_store_dataset
+)
+SELECT customer_name, order_number, sales, Row_Num
+FROM Customer_Orders
+WHERE Row_Num <= 3
+ORDER BY customer_name, Row_Num;
+
+
+# Show each order along with the average sales for that customer.
+
+SELECT customer_name, order_number, sales,
+AVG(sales) OVER ( PARTITION BY customer_name ) AS Customer_Avg_Sales
+FROM super_store_dataset
+ORDER BY customer_name, order_number;
+
+
+# Show a running total of sales for each customer,
+# ordered by order date.
+
+SELECT customer_name, order_number, order_date, sales,
+SUM(sales) OVER ( PARTITION BY customer_name ORDER BY order_date, order_number
+ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS Running_Total_Sales
+FROM super_store_dataset
+ORDER BY customer_name, order_date, order_number;
+
+
+# Find the lowest-sales order for each customer.
+
+WITH Customer_Orders AS
+(
+SELECT customer_name, order_number, sales,
+ROW_NUMBER() OVER ( PARTITION BY customer_name ORDER BY sales ASC ) AS Row_Num
+FROM super_store_dataset
+)
+SELECT customer_name, order_number, sales
+FROM Customer_Orders
+WHERE Row_Num = 1
+ORDER BY customer_name;
+
+
+# Display each order along with the total number of orders
+# placed by that customer.
+
+SELECT customer_name, order_number, sales, COUNT(*) OVER (
+PARTITION BY customer_name ) AS Total_Customer_Orders
+FROM super_store_dataset
+ORDER BY customer_name, order_number;
+
+
+# Rank all orders from the highest sales to the lowest sales.
+
+SELECT order_number, customer_name, sales,
+RANK() OVER ( ORDER BY sales DESC) AS Sales_Rank
+FROM super_store_dataset
+ORDER BY Sales_Rank;
+
+
+# For each customer, display their order sales,
+# highest sale, and average sale.
+
+SELECT customer_name, order_number,sales,
+MAX(sales) OVER ( PARTITION BY customer_name) AS Highest_Customer_Sale,
+AVG(sales) OVER (PARTITION BY customer_name) AS Average_Customer_Sale
+FROM super_store_dataset
+ORDER BY customer_name, sales DESC;
+
+
+# Find the second-highest sales order for each customer.
+
+WITH Customer_Orders AS
+(
+SELECT customer_name, order_number, sales,
+ROW_NUMBER() OVER ( PARTITION BY customer_name ORDER BY sales DESC) AS Row_Num
+FROM super_store_dataset
+)
+SELECT customer_name, order_number, sales
+FROM Customer_Orders
+WHERE Row_Num = 2
+ORDER BY customer_name;
+
+
+# Find the top 2 highest-sales orders for each customer.
+
+WITH Customer_Orders AS
+(
+SELECT  customer_name, order_number, sales,
+ROW_NUMBER() OVER ( PARTITION BY customer_name ORDER BY sales DESC) AS Row_Num
+FROM super_store_dataset
+)
+SELECT customer_name, order_number, sales, Row_Num
+FROM Customer_Orders
+WHERE Row_Num <= 2
+ORDER BY customer_name, Row_Num;
 
 
 
