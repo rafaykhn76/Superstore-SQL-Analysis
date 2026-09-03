@@ -187,9 +187,7 @@ FROM super_store_dataset
 GROUP BY category, product_name
 ORDER BY category, Sales_Rank;
 
-# ============================================================
-# WINDOW FUNCTIONS
-# ============================================================
+# Window Function
 
 # Within each category, rank the products by their total sales, with the highest-selling product ranked #1. 
 
