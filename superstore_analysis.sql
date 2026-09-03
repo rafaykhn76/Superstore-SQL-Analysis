@@ -187,27 +187,6 @@ FROM super_store_dataset
 GROUP BY category, product_name
 ORDER BY category, Sales_Rank;
 
-# Window Function
-
-# Within each category, rank the products by their total sales, with the highest-selling product ranked #1. 
-
-SELECT category, product_name,
-SUM(sales) AS Total_Sales,
-RANK() OVER ( PARTITION BY category ORDER BY SUM(sales) DESC) AS Sales_Rank
-FROM super_store_dataset
-GROUP BY category, product_name
-ORDER BY category, Sales_Rank;
-
-
-# Within each category, rank the products by their total sales,
-# with the highest-selling product ranked #1.
-
-SELECT category,product_name,
-SUM(sales) AS Total_Sales,RANK() OVER (PARTITION BY category ORDER BY SUM(sales) DESC) AS Sales_Rank
-FROM super_store_dataset
-GROUP BY category, product_name
-ORDER BY category, Sales_Rank;
-
 
 # For each customer, assign a row number to their orders
 # based on sales from highest to lowest.
@@ -348,32 +327,3 @@ SELECT customer_name, order_number, sales, Row_Num
 FROM Customer_Orders
 WHERE Row_Num <= 2
 ORDER BY customer_name, Row_Num;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
